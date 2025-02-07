@@ -2,7 +2,7 @@
 #include<stdlib.h>
 void delete(int *arr,int *n){
     int key;
-    printf("enter the element you want to delete ");
+    printf("enter the element you want to delete 
     scanf("%d",&key);
     for(int i=0;i<*n;){
         if(arr[i]==key){
