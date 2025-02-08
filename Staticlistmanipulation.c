@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-void delete(int *arr, int *n)
+void delete(int **arr, int *n, int *capacity)
 {
     int key, flag = 0;
     printf("enter the element you want to delete ");
@@ -10,33 +10,41 @@ void delete(int *arr, int *n)
         printf("Array is empty, cannot delete element.\n");
         return;
     }
-    for (int i = 0; i < *n;)
+    for (int i = 0; i < *n;i++)
     {
-        if (arr[i] == key)
+        if ((*arr)[i] == key)
         {
             for (int j = i; j < *n - 1; j++)
             {
-                arr[j] = arr[j + 1];
+                (*arr)[j] = (*arr)[j + 1];
             }
             (*n)--;
             flag = 1;
+            break;
         }
-        else
-            i++;
     }
     if (!flag)
     {
         printf("Element not found in the array.\n");
         return;
     }
+    if(*n < *capacity/2){
+        *capacity /=2;
+        int *temp=realloc(*arr,(*capacity)*sizeof(int));
+        if(!temp){
+            printf("Memory allocation failed\n");
+            return;
+        }
+        *arr=temp;
+    }
     printf("Array after deleting the element is:\n");
     for (int i = 0; i < *n; i++)
     {
-        printf("%d ", arr[i]);
+        printf("%d ", (*arr)[i]);
     }
     printf("\n");
 }
-void insert(int **arr, int *n)
+void insert(int **arr, int *n, int *capacity)
 {
     int key, index;
     printf("enter the element you want to insert ");
@@ -48,19 +56,29 @@ void insert(int **arr, int *n)
         printf("Invalid Position !!!!!\n");
         return;
     }
-    int *temp = realloc(*arr, (*n + 1) * sizeof(int));
-    if (!temp)
+    if (*n >= *capacity)
     {
-        printf("Memory allocation failed\n");
-        return;
+        *capacity *= 2;
+        int *temp = realloc(*arr, (*capacity) * sizeof(int));
+        if (!temp)
+        {
+            printf("Memory allocation failed\n");
+            return;
+        }
+        *arr = temp;
     }
-    *arr = temp;
+    if(index==*n){
+        (*arr)[*n]=key;
+        (*n)++;
+    } 
+    else{
     for (int i = *n - 1; i >= index; i--)
     {
         (*arr)[i + 1] = (*arr)[i];
     }
     (*arr)[index] = key;
     (*n)++;
+    }
     printf("Array after inserting the element is:\n");
     for (int i = 0; i < *n; i++)
     {
@@ -68,32 +86,32 @@ void insert(int **arr, int *n)
     }
     printf("\n");
 }
-void update(int *arr, int *n)
+void update(int *arr, int n)
 {
     int val, index;
     printf("enter the element you want to update :  ");
     scanf("%d", &val);
     printf("Enter the Index of the element you want to update: ");
     scanf("%d", &index);
-    if (index >= *n || index < 0)
+    if (index >= n || index < 0)
     {
         printf("Invalid Position !!!\n");
         return;
     }
     arr[index] = val;
     printf("Array after updating the element is:\n");
-    for (int i = 0; i < *n; i++)
+    for (int i = 0; i < n; i++)
     {
         printf("%d ", arr[i]);
     }
     printf("\n");
 }
-void search(int *arr, int *n)
+void search(int *arr, int n)
 {
     int val, flag = 0;
     printf("enter the element you want to search ");
     scanf("%d", &val);
-    for (int i = 0; i < *n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (arr[i] == val)
         {
@@ -107,15 +125,15 @@ void search(int *arr, int *n)
         printf("Element not found in the array.\n");
     }
 }
-void traverse(int *arr, int *n)
+void traverse(int *arr, int n)
 {
-    if (*n == 0)
+    if (n == 0)
     {
         printf("Array is empty\n");
         return;
     }
     printf("Elements of array are :");
-    for (int i = 0; i < *n; i++)
+    for (int i = 0; i < n; i++)
     {
         printf("%d ", arr[i]);
     }
@@ -156,19 +174,19 @@ int main()
         switch (choice)
         {
         case 1:
-            delete (arr, &n);
+            delete (&arr, &n, &capacity);
             break;
         case 2:
-            insert(&arr, &n);
+            insert(&arr, &n, &capacity);
             break;
         case 3:
-            update(arr, &n);
+            update(arr, n);
             break;
         case 4:
-            search(arr, &n);
+            search(arr, n);
             break;
         case 5:
-            traverse(arr, &n);
+            traverse(arr, n);
             break;
         case 6:
             free(arr);
